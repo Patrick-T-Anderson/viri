@@ -17,12 +17,17 @@ let file;
 let clip = [];
 
 const createRoom = async () => {
+    clip = [];
     try {
         // showChatRoom();
+        console.log("px = createPeerConnection(); // a promise to be filled later");
         px = createPeerConnection(); // a promise to be filled later
         //joinRoom(); // We would call joinRoom here, but px is not yet initialized!
+        console.log("userMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });");
         userMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        console.log("userMediaStream.getTracks().forEach(track => senders.push(px.addTrack(track, userMediaStream)));");
         userMediaStream.getTracks().forEach(track => senders.push(px.addTrack(track, userMediaStream)));
+        console.log("document.getElementById('self-view').srcObject = userMediaStream;");
         document.getElementById('self-view').srcObject = userMediaStream;
 
     } catch (err) {
@@ -99,10 +104,8 @@ const writeMessage = (json) => {
 };
 
 // workaround until we can store on borg
-const copyToClipboard = (message) => {
-    // const msg = message;
-    // const json = JSON.parse(msg);
-    clip.push(message);
+const copyToClipboard = (json) => {
+    clip.push(json);
     navigator.permissions.query({name: "clipboard-write"}).then((result) => {
         if (result.state === "granted" || result.state === "prompt") {
             navigator.clipboard.writeText(JSON.stringify(clip)).then(() => {
@@ -115,15 +118,17 @@ const copyToClipboard = (message) => {
 };
 
 // Answer
+const joinRoomWithOffer = () => { joinRoom(); }
+const joinRoomWithAnswer = () => { joinRoom(); }
 const joinRoom = () => {
+    clip = [];
     if(offer_paste)
     {
-        console.log('Answering');
-        unpackClipboard(offer_paste);
+        unpackOffer(offer_paste);
     }
 }
 
-const unpackClipboard = async (message) => {
+const unpackOffer = async (message) => {
     // message = "[ " + message + " ]";
     console.log('################################################################');
     console.log('message');
@@ -199,8 +204,9 @@ const readMessage = async (json) => {
 // };
 
 const showChatRoom = () => {
-    document.getElementById('start').style.display = 'none';
-    document.getElementById('chat-room').style.display = 'grid';
+    document.getElementById('create').style.display = 'inline';
+    document.getElementById('chat-room').style.display = 'inline';
+    document.getElementById('join').style.display = 'none';
 };
 
 // const shareFile = () => {
@@ -260,7 +266,13 @@ document.getElementById('createRoom').addEventListener('click', async () => {
     // }
 });
 
-document.getElementById('joinRoom').addEventListener('click', async () => {
+document.getElementById('joinRoomWithOffer').addEventListener('click', async () => {
+    // if (room) {
+        joinRoom();
+    // }
+});
+
+document.getElementById('joinRoomWithAnswer').addEventListener('click', async () => {
     // if (room) {
         joinRoom();
     // }

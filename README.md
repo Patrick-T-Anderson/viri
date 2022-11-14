@@ -1,5 +1,5 @@
 # Demo:
-* https://earthchange.github.io/GoG/
+* https://Patrick-T-Anderson.github.io/viri
 
 # Credits:
 * https://github.com/prorishi/Clock
