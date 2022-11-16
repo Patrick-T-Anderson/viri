@@ -9,30 +9,21 @@ const MAXIMUM_MESSAGE_SIZE = 65535;
 const END_OF_FILE_MESSAGE = 'EOF';
 let room;
 let offer_paste = '';
-let px;
 const senders = [];
 let userMediaStream;
 let displayMediaStream;
 let file;
 let clip = [];
+let px;
+
 
 const createRoom = async () => {
+    initMedia();
     clip = [];
-    try {
-        // showChatRoom();
-        console.log("px = createPeerConnection(); // a promise to be filled later");
-        px = createPeerConnection(); // a promise to be filled later
-        //joinRoom(); // We would call joinRoom here, but px is not yet initialized!
-        console.log("userMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });");
-        userMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-        console.log("userMediaStream.getTracks().forEach(track => senders.push(px.addTrack(track, userMediaStream)));");
-        userMediaStream.getTracks().forEach(track => senders.push(px.addTrack(track, userMediaStream)));
-        console.log("document.getElementById('self-view').srcObject = userMediaStream;");
-        document.getElementById('self-view').srcObject = userMediaStream;
-
-    } catch (err) {
-        console.error(err);
-    }
+    document.getElementById('create').style.display = 'none';
+    document.getElementById('offer').style.display = 'inline';
+    document.getElementById('or').style.display = 'none';
+    document.getElementById('answer').style.display = 'none';
 };
 
 const createPeerConnection = () => {
@@ -118,25 +109,36 @@ const copyToClipboard = (json) => {
 };
 
 // Answer
-const joinRoomWithOffer = () => { joinRoom(); }
-const joinRoomWithAnswer = () => { joinRoom(); }
-const joinRoom = () => {
+const joinRoomWithOffer = () => { joinRoom(offer_paste); }
+const joinRoomWithAnswer = () => {
+    initMedia();
+    joinRoom(answer_paste);
+}
+const joinRoom = (paste) => {
     clip = [];
-    if(offer_paste)
+    if(paste)
     {
-        unpackOffer(offer_paste);
+        unpackPaste(paste);
     }
+    // document.getElementById('chat-room').style.display = 'inline';
+    // document.getElementById('start').style.display = 'none';
+    // document.getElementById('offer').style.display = 'none';
+    // document.getElementById('answer').style.display = 'none';
+    // showChatRoom();
 }
 
-const unpackOffer = async (message) => {
+const unpackPaste = async (message) => {
     // message = "[ " + message + " ]";
     console.log('################################################################');
     console.log('message');
     console.log(message);
+    if(message[0] != '[')
+        return
+
     const data = JSON.parse(message);
 
     if (!data) {
-        console.log('could not unpack clipboard' + message);
+        console.log('could not unpack paste' + message);
         return;
     }
     const [ sdp, ice, ice2 ] = data;
@@ -147,6 +149,7 @@ const unpackOffer = async (message) => {
 
 // Read from the shared data store
 const readMessage = async (json) => {
+    initMedia();
     const data = json; //JSON.parse(message.data);
     console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
     console.log(json);
@@ -203,10 +206,12 @@ const readMessage = async (json) => {
 //     //   .forEach(peer => peer.connection.send(message.utf8Data)); // send message to other peers
 // };
 
-const showChatRoom = () => {
-    document.getElementById('create').style.display = 'inline';
-    document.getElementById('chat-room').style.display = 'inline';
-    document.getElementById('join').style.display = 'none';
+const initMedia = async () => {
+    if (px) return;
+    px = createPeerConnection();
+    userMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+    userMediaStream.getTracks().forEach(track => senders.push(px.addTrack(track, userMediaStream)));
+    document.getElementById('self-view').srcObject = userMediaStream;
 };
 
 // const shareFile = () => {
@@ -268,50 +273,50 @@ document.getElementById('createRoom').addEventListener('click', async () => {
 
 document.getElementById('joinRoomWithOffer').addEventListener('click', async () => {
     // if (room) {
-        joinRoom();
+        joinRoomWithOffer();
     // }
 });
 
 document.getElementById('joinRoomWithAnswer').addEventListener('click', async () => {
     // if (room) {
-        joinRoom();
+        joinRoomWithAnswer();
     // }
 });
 
-document.getElementById('share-button').addEventListener('click', async () => {
-    if (!displayMediaStream) {
-        displayMediaStream = await navigator.mediaDevices.getDisplayMedia();
-    }
-    senders.find(sender => sender.track.kind === 'video').replaceTrack(displayMediaStream.getTracks()[0]);
+// document.getElementById('share-button').addEventListener('click', async () => {
+//     if (!displayMediaStream) {
+//         displayMediaStream = await navigator.mediaDevices.getDisplayMedia();
+//     }
+//     senders.find(sender => sender.track.kind === 'video').replaceTrack(displayMediaStream.getTracks()[0]);
 
-    //show what you are showing in your "self-view" video.
-    document.getElementById('self-view').srcObject = displayMediaStream;
+//     //show what you are showing in your "self-view" video.
+//     document.getElementById('self-view').srcObject = displayMediaStream;
 
-    //hide the share button and display the "stop-sharing" one
-    document.getElementById('share-button').style.display = 'none';
-    document.getElementById('stop-share-button').style.display = 'inline';
-});
+//     //hide the share button and display the "stop-sharing" one
+//     document.getElementById('share-button').style.display = 'none';
+//     document.getElementById('stop-share-button').style.display = 'inline';
+// });
 
-document.getElementById('stop-share-button').addEventListener('click', async () => {
-    senders.find(sender => sender.track.kind === 'video')
-        .replaceTrack(userMediaStream.getTracks().find(track => track.kind === 'video'));
-    document.getElementById('self-view').srcObject = userMediaStream;
-    document.getElementById('share-button').style.display = 'inline';
-    document.getElementById('stop-share-button').style.display = 'none';
-});
+// document.getElementById('stop-share-button').addEventListener('click', async () => {
+//     senders.find(sender => sender.track.kind === 'video')
+//         .replaceTrack(userMediaStream.getTracks().find(track => track.kind === 'video'));
+//     document.getElementById('self-view').srcObject = userMediaStream;
+//     document.getElementById('share-button').style.display = 'inline';
+//     document.getElementById('stop-share-button').style.display = 'none';
+// });
 
-document.getElementById('share-file-button').addEventListener('click', () => {
-    document.getElementById('select-file-dialog').style.display = 'block';
-});
+// document.getElementById('share-file-button').addEventListener('click', () => {
+//     document.getElementById('select-file-dialog').style.display = 'block';
+// });
 
-document.getElementById('cancel-button').addEventListener('click', () => {
-    closeDialog();
-});
+// document.getElementById('cancel-button').addEventListener('click', () => {
+//     closeDialog();
+// });
 
-document.getElementById('select-file-input').addEventListener('change', (event) => {
-    file = event.target.files[0];
-    document.getElementById('ok-button').disabled = !file;
-});
+// document.getElementById('select-file-input').addEventListener('change', (event) => {
+//     file = event.target.files[0];
+//     document.getElementById('ok-button').disabled = !file;
+// });
 
 // document.getElementById('ok-button').addEventListener('click', () => {
 //     shareFile();
