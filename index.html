@@ -18,10 +18,10 @@
       <div id="create">
       You can <button id="createRoom">Create a Room</button> for others to join.</div>
       <div id="offer" style="display: none">
-        Email the 'Offer' (on your `clipboard`) to your friend.<br/>
-        Once they respond,
+        Now email the 'Offer' (on your `clipboard`) to your friend.<br/>
+        And once they respond,
         <input id="answer_paste" placeholder="Paste their 'Answer' here."/><br/>
-        and <button id="joinRoomWithAnswer">Join the Room</button>
+        to <button id="joinRoomWithAnswer">Join the Room</button>
       </div>
       <div id="or">
       <hr/>
@@ -34,6 +34,13 @@
         Now email your clipboard back to the creator.</div>
       </div>
       <hr/>
+      <div id="clipper">
+        This is the clipboard, in case it is not working for you.
+        <input id="clip" placeholder="Waiting..."/>
+        <!-- <textarea id="clip" rows="10" cols="50" onclick="this.focus();this.select()" readonly="readonly"> -->
+        <!--   Waiting... -->
+        <!-- </textarea> -->
+      </div>
       <a href="https://github.com/Patrick-T-Anderson/viri">Sources</a>
       <div id="chat-room">
         <video id="self-view" autoplay></video>

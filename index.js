@@ -97,9 +97,11 @@ const writeMessage = (json) => {
 // workaround until we can store on borg
 const copyToClipboard = (json) => {
     clip.push(json);
+    const clipboard = JSON.stringify(clip)
+    document.getElementById('clip').value = clipboard
     navigator.permissions.query({name: "clipboard-write"}).then((result) => {
         if (result.state === "granted" || result.state === "prompt") {
-            navigator.clipboard.writeText(JSON.stringify(clip)).then(() => {
+            navigator.clipboard.writeText(clipboard).then(() => {
                 console.log("message appended to clipboard");
             }, () => {
                 console.log("ERROR: could not write to clipboard");
@@ -110,11 +112,11 @@ const copyToClipboard = (json) => {
 
 // Answer
 const joinRoomWithOffer = () => { joinRoom(offer_paste); }
-const joinRoomWithAnswer = () => {
-    initMedia();
-    joinRoom(answer_paste);
-}
+const joinRoomWithAnswer = () => { joinRoom(answer_paste); }
+
 const joinRoom = (paste) => {
+    document.getElementById('clipper').style.display = 'inline';
+    initMedia();
     clip = [];
     if(paste)
     {
@@ -124,7 +126,6 @@ const joinRoom = (paste) => {
     // document.getElementById('start').style.display = 'none';
     // document.getElementById('offer').style.display = 'none';
     // document.getElementById('answer').style.display = 'none';
-    // showChatRoom();
 }
 
 const unpackPaste = async (message) => {
