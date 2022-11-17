@@ -35,7 +35,7 @@
       </div>
       <hr/>
       <div id="clipper">
-        This is the clipboard, in case it is not working for you.
+        In case the clipboard is not working:
         <input id="clip" placeholder="Waiting..."/>
         <!-- <textarea id="clip" rows="10" cols="50" onclick="this.focus();this.select()" readonly="readonly"> -->
         <!--   Waiting... -->
@@ -43,15 +43,19 @@
       </div>
       <a href="https://github.com/Patrick-T-Anderson/viri">Sources</a>
       <div id="chat-room">
-        <video id="self-view" autoplay></video>
-        <div id="remote-view-container">
-          <video id="remote-view" autoplay></video>
+        <div class="row">
+          <div class="column">
+            <video id="self-view" autoplay controls width="320" height="240"> </video>
+          </div>
+          <div class="column">
+            <video id="remote-view" autoplay controls width="320" height="240"></video>
+          </div>
+        </div>
           <!-- <div id="view-buttons"> -->
             <!-- <button class="view-button" id="share-button">share?</button> -->
             <!-- <button class="view-button" style="display: none" id="stop-share-button"></button> -->
             <!-- <button class="view-button" id="share-file-button">share file</button> -->
           <!-- </div> -->
-        </div>
       </div>
     </div>
 

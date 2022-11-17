@@ -212,7 +212,7 @@ const initMedia = async () => {
     px = createPeerConnection();
     userMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
     userMediaStream.getTracks().forEach(track => senders.push(px.addTrack(track, userMediaStream)));
-    document.getElementById('self-view').srcObject = userMediaStream;
+    // document.getElementById('self-view').srcObject = userMediaStream;
 };
 
 // const shareFile = () => {
